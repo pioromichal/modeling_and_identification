@@ -1,27 +1,22 @@
 set(0, 'defaulttextinterpreter','latex');
 set(0, 'DefaultLineLineWidth',1);
 set(0, 'DefaultStairLineWidth',1);
+clear all;
+close all;
+wykresy = false;
+data = dane(false);
 
+a0=data.a0;
+a1=data.a1;
+a2=data.a2;
+b0=data.b0;
+alpha1=data.alpha1;
+alpha2=data.alpha2;
+alpha3=data.alpha3;
+alpha4=data.alpha4;
+u_min=data.u_min;
+u_max=data.u_max;  
 
-
-
-symbolicznie = false;
-if symbolicznie == true
-    syms a0 a1 a2 b0 alpha1 alpha2 alpha3 alpha4
-else
-    a0=0.00185185;
-    a1=0.0462963;
-    a2=0.377778;
-    b0=0.00333333;
-    alpha1=0.4;
-    alpha2=0.55;
-    alpha3=-0.92;
-    alpha4=0.53;
-end
-
-
-u_min=-1;
-u_max=1;
 X_0=[0;0;0];
 
 
@@ -34,18 +29,14 @@ yt=x1;
 dXdt=[dx1;dx2;dx3];
 
 
-
 % Zadanie 1
 % Model nieliniowy statyczny
 Xs = solve(dXdt==zeros(3,1), Xt);
 y=collect(Xs.x1);
 
-% figure;
-% fplot(y,[u_min u_max]);
-
-% setPlotParams('$u$', '$y$', [-1, 3]));
-% exportgraphics(gcf,'./wykresy/nieliniowa_charakterystyka_statyczna.png','Resolution',400);
-
+if wykresy
+    wykresy_char_stat_nlin(data, y);
+end
 
 
 % Zadanie 2
@@ -68,28 +59,13 @@ y_lin = collect(expand(y_lin),ut);
 
 
 
-%  Zadanie 3
-paths_stat=["./wykresy/zlinearyzowane_charakterystyki_statyczne_1.png";"./wykresy/zlinearyzowane_charakterystyki_statyczne_2.png";"./wykresy/zlinearyzowane_charakterystyki_statyczne_3.png"];
-
-u_sim=[-0.5 0 0.5];
-% for i=1:3
-%     figure;
-%     fplot(y,[u_min u_max]);
-%     hold on;
-%     fplot(subs(y_lin, ud, u_sim(i)), [u_min u_max]);
-
-%     setPlotParams('$u$','$y$',[-1, 3]);
-%     exportgraphics(gcf,paths_stat(i),'Resolution',400);
-% end
-
-
-
+% %  Zadanie 3
+if wykresy
+    wykresy_char_stat_zlin(data,y,y_lin);
+end
 
 % Zadanie 4
 % Simulink
-
-
-
 
 
 % Zadanie 5
@@ -108,50 +84,12 @@ ud = 0;
 yt_lin = yt;
 
 
-
-
-
 % Zadanie 6
 % Wykresy, wykresy, wykresy
-u_step=[0.1, 0.5, 1];
-uds=[0 0.5 1];
-t_u_step_sim=1;
 
-model_nlin = 'ciagly_nieliniowy_model_dynamiczny';
-model_lin = 'ciagly_zlinearyzowany_model_dynamiczny';
-open_system(model_nlin,'loadonly');
-
-open_system(model_lin,'loadonly');
-paths_zlin=["./wykresy/odpowiedzi_skokowe_1_plin_1.png","./wykresy/odpowiedzi_skokowe_2_plin_1.png","./wykresy/odpowiedzi_skokowe_3_plin_1.png";
-    "./wykresy/odpowiedzi_skokowe_1_plin_2.png","./wykresy/odpowiedzi_skokowe_2_plin_2.png","./wykresy/odpowiedzi_skokowe_3_plin_2.png";
-    "./wykresy/odpowiedzi_skokowe_1_plin_3.png","./wykresy/odpowiedzi_skokowe_2_plin_3.png","./wykresy/odpowiedzi_skokowe_3_plin_3.png";
-    ];
-for j=1:3
-    u_step_sim=u_step(j);
-    simout_nlin = sim(model_nlin,'Solver','ode45','StartTime','0','StopTime','100');
-    yt_nlin_sim = simout_nlin.get("yt");
-    ut_nlin_sim = simout_nlin.get("ut");
-    
-    for i=1:3
-        ud=uds(i);
-        simout_lin = sim(model_lin,'Solver','ode45','StartTime','0','StopTime','100');
-        yt_lin_sim = simout_lin.get("yt");
-        ut_lin_sim = simout_lin.get("ut");
- 
-        figure;
-        plot(ut_nlin_sim.time,ut_nlin_sim.Data);
-        hold on;
-        plot(yt_nlin_sim.time,yt_nlin_sim.Data);
-        plot(yt_lin_sim.time,yt_lin_sim.Data, '--');
-        legend('Sygnał sterujący u', 'Model nieliniowy', sprintf('Model zlinearyzowany w pkt. %.1f', ud),'Location','southeast');
-        setPlotParams('$y,u$','$t$',[u_step_sim*(-0.1), u_step_sim*1.1]);
-        exportgraphics(gcf,paths_zlin(i,j),'Resolution',400);
-    end
+if wykresy
+    wykresy_char_dyn_zlin;
 end
-
-
-
-
 
 
 % Zadanie 7
@@ -169,40 +107,19 @@ for i=1:3
     Xkp1(i)=collect(Xkp1(i));
 end
 yk = xk1;
-
-
-
-
+Xkp1_lat=latex(Xkp1);
+yk_lat=latex(yk);
 
 % Zadanie 8
 % Wykresy, wykresy, wykresy
-u_step_sim=1;
-T_sim=[0.2,1,5];
-t_u_step_sim=1;
-model_nlin = 'ciagly_nieliniowy_model_dynamiczny';
-model_dys = 'dyskretny_nieliniowy_model_dynamiczny';
-open_system(model_nlin,'loadonly');
-open_system(model_dys,'loadonly');
-
-simout_nlin = sim(model_nlin,'Solver','ode45','StartTime','0','StopTime','100');
-yt_nlin_sim = simout_nlin.get("yt");
-ut_nlin_sim = simout_nlin.get("ut");
-
-paths_dys=["./wykresy/odpowiedzi_skokowe_dyskretny_1.png";"./wykresy/odpowiedzi_skokowe_dyskretny_2.png";"./wykresy/odpowiedzi_skokowe_dyskretny_3.png"];
-
-for i=1:3
-    T=T_sim(i);
-    simout_dys = sim(model_dys,'Solver','ode45','StartTime','0','StopTime','100');
-    yt_dys_sim = simout_dys.get("yt");
-    figure;
-    plot(ut_nlin_sim.time,ut_nlin_sim.Data);
-    hold on;
-    plot(yt_nlin_sim.time,yt_nlin_sim.Data);
-    stairs(yt_dys_sim.time,yt_dys_sim.Data);
-    ylabel('$y$');
-    xlabel('$t$');
-    setPlotParams();
-    exportgraphics(gcf,paths_dys(i),'Resolution',400);
+if wykresy
+    wykresy_char_dyn_dys;
 end
 
-
+%Zadanie dodatkowe
+[G, K_stat]=transmitancja_dyskretna(data, dX_lin);
+syms ud
+uds=[-0.5 0.0 0.5];
+for i=1:3
+    K_stat_vals(i)=double(subs(K_stat, ud, uds(i)));
+end
