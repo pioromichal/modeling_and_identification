@@ -20,8 +20,8 @@ for i=1:3
     figure;
     plot(ut_nlin_sim.time,ut_nlin_sim.Data);
     hold on;
-    plot(yt_nlin_sim.time,yt_nlin_sim.Data);
-    stairs(yt_dys_sim.time,yt_dys_sim.Data, ':');
+    stairs(yt_dys_sim.time,yt_dys_sim.Data);
+    plot(yt_nlin_sim.time,yt_nlin_sim.Data, ':');
 
     legend('Sygnał sterujący u', 'Model nieliniowy', sprintf('Model dyskrtetny: T=%.1f', T),'Location','southeast');    
     setPlotParams('$y,u$','$t$',[u_step_sim*(-0.1), u_step_sim*1.1], [15 10]);

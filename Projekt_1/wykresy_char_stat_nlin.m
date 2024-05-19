@@ -18,7 +18,7 @@ y_fun = matlabFunction(y);
 y_vals=y_fun(u_vals);
 plot(u_vals, y_vals);
 legend('Charakterystyka nieliniowa','Location','northeast');
-setPlotParams('$u$', '$y$', [-1, 3], [13 10]);
+setPlotParams('$y$', '$u$', [-1, 3], [12 10]);
 exportgraphics(gcf,'./wykresy/nieliniowa_charakterystyka_statyczna.png','Resolution',400);
 
 

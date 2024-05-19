@@ -15,7 +15,7 @@ paths_stat=["./wykresy/zlinearyzowane_charakterystyki_statyczne_1.png";"./wykres
 u_vals=linspace(u_min,u_max,100);
 y_fun = matlabFunction(y);
 y_vals=y_fun(u_vals);
-u_sim=[-0.5 0 0.5];
+u_sim=[0 0.5 1.0];
 for i=1:3
     figure;  
     plot(u_vals, y_vals);
@@ -24,7 +24,7 @@ for i=1:3
     y_lin_vals=y_lin_fun(u_vals);
     plot(u_vals, y_lin_vals, ':');
     legend('Charakterystyka nieliniowa', sprintf('Charakterystyka zlinearyzowana w pkt. %.1f', u_sim(i)),'Location','northeast');
-    setPlotParams('$u$','$y$',[-1, 3], [13 10]);
+    setPlotParams('$y$','$u$',[-1, 3], [12 10]);
     exportgraphics(gcf,paths_stat(i),'Resolution',400);
 end
 end
